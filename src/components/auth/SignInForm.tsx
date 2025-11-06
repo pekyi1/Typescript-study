@@ -29,6 +29,7 @@ export default function SignInForm() {
       const data = await login({ username, password });
       //you then set the data to the zustand user state
       setUser(data);
+      console.log(data);
       // localStorage.setItem("profile", JSON.stringify(data));
       toast.success(data.message || "Login successful");
       setTimeout(() => navigate('/'), 1000);
