@@ -1,25 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
+import { useUserStore } from "../../Stores/useUserStore";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<UserData>();
-  const navigate = useNavigate();
+  const user = useUserStore((state) => state.user);
+  const clearUser = useUserStore((state) => state.clearUser);
 
-  interface UserData{
-    id: number;
-    gender: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    age: string;
-    image: string;
-    username: string;
-
-  }
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -30,18 +20,21 @@ export default function UserDropdown() {
   }
 
   const handleSignOut = () => {
-    localStorage.removeItem("profile");
-    setTimeout(() => navigate('/signin'), 1000);
+    clearUser(); //this uses the zustand state to change the user back to null
+    // setTimeout(() => navigate('/signin'), 1000);
   }
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("profile");
-    if(storedUser){
-      const parsed = JSON.parse(storedUser);
-      setUser(parsed || parsed.user);
-    }
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("profile");
+  //   if(storedUser){
+  //     const parsed = JSON.parse(storedUser);
+  //     setUser(parsed || parsed.user);
+  //   }
 
-  },[])
+  // },[])
+
+
+
   return (
     <div className="relative">
       <button

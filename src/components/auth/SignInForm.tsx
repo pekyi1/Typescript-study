@@ -7,6 +7,7 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import { login } from "../../services/authService";
 import toast from "react-hot-toast";
+import { useUserStore } from "../../Stores/useUserStore";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,14 +17,19 @@ export default function SignInForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
+
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      //Now, we will still save to localStorage but also call setUser() so the UI updates immediately.
       const data = await login({ username, password });
-      localStorage.setItem("profile", JSON.stringify(data));
+      //you then set the data to the zustand user state
+      setUser(data);
+      // localStorage.setItem("profile", JSON.stringify(data));
       toast.success(data.message || "Login successful");
       setTimeout(() => navigate('/'), 1000);
     } catch (err: any) {
