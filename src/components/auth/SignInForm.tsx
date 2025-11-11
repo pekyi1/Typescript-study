@@ -8,40 +8,58 @@ import Checkbox from "../form/input/Checkbox";
 import { login } from "../../services/authService";
 import toast from "react-hot-toast";
 import { useUserStore } from "../../Stores/useUserStore";
+import { useMutation } from "@tanstack/react-query";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
-  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const setUser = useUserStore((state) => state.setUser);
 
-
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      //Now, we will still save to localStorage but also call setUser() so the UI updates immediately.
-      const data = await login({ username, password });
-      //you then set the data to the zustand user state
+  const mutation = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
       setUser(data);
-      console.log(data);
-      // localStorage.setItem("profile", JSON.stringify(data));
       toast.success(data.message || "Login successful");
       setTimeout(() => navigate('/'), 1000);
-    } catch (err: any) {
-      toast.error(
-        err.response?.data?.message || "Network failed, Try again later"
-      );
-      console.error("Login error:", err.response?.data?.message);
-    } finally {
-      setLoading(false);
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Login failed");
+      console.error("Login Error:", err.response?.data?.message);
     }
-  }
+  })
+  //This is the new login function using tanstack
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    mutation.mutate({ username, password }); // ✅ call mutation
+  };
+
+
+  // const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   try {
+  //     //Now, we will still save to localStorage but also call setUser() so the UI updates immediately.
+  //     const data = await login({ username, password });
+  //     //you then set the data to the zustand user state
+  //     setUser(data);
+  //     console.log(data);
+  //     // localStorage.setItem("profile", JSON.stringify(data));
+  //     toast.success(data.message || "Login successful");
+  //     setTimeout(() => navigate('/'), 1000);
+  //   } catch (err: any) {
+  //     toast.error(
+  //       err.response?.data?.message || "Network failed, Try again later"
+  //     );
+  //     console.error("Login error:", err.response?.data?.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   return (
     <div className="flex flex-col flex-1">
@@ -166,9 +184,9 @@ export default function SignInForm() {
                   <button
                     className="w-full inline-flex items-center justify-center py-3 text-sm font-medium rounded-lg bg-brand-500 text-white hover:bg-brand-600"
                     type="submit"
-                    disabled={loading}
+                    disabled={mutation.isPending}
                   >
-                    {loading ? "Signing in..." : "Sign in"}
+                    {mutation.isPending ? "Signing in..." : "Sign in"}
                   </button>
                 </div>
               </div>
