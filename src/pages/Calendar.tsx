@@ -34,26 +34,32 @@ const Calendar: React.FC = () => {
   };
 
   useEffect(() => {
-    // Initialize with some events
+    // Initialize with some preschool events
     setEvents([
       {
         id: "1",
-        title: "Event Conf.",
+        title: "Parent-Teacher Conf.",
         start: new Date().toISOString().split("T")[0],
         extendedProps: { calendar: "Danger" },
       },
       {
         id: "2",
-        title: "Meeting",
+        title: "Staff Meeting",
         start: new Date(Date.now() + 86400000).toISOString().split("T")[0],
         extendedProps: { calendar: "Success" },
       },
       {
         id: "3",
-        title: "Workshop",
+        title: "Art Exhibition",
         start: new Date(Date.now() + 172800000).toISOString().split("T")[0],
         end: new Date(Date.now() + 259200000).toISOString().split("T")[0],
         extendedProps: { calendar: "Primary" },
+      },
+      {
+        id: "4",
+        title: "Field Trip to Zoo",
+        start: new Date(Date.now() + 432000000).toISOString().split("T")[0],
+        extendedProps: { calendar: "Warning" },
       },
     ]);
   }, []);
@@ -82,12 +88,12 @@ const Calendar: React.FC = () => {
         prevEvents.map((event) =>
           event.id === selectedEvent.id
             ? {
-                ...event,
-                title: eventTitle,
-                start: eventStartDate,
-                end: eventEndDate,
-                extendedProps: { calendar: eventLevel },
-              }
+              ...event,
+              title: eventTitle,
+              start: eventStartDate,
+              end: eventEndDate,
+              extendedProps: { calendar: eventLevel },
+            }
             : event
         )
       );
@@ -201,9 +207,8 @@ const Calendar: React.FC = () => {
                             />
                             <span className="flex items-center justify-center w-5 h-5 mr-2 border border-gray-300 rounded-full box dark:border-gray-700">
                               <span
-                                className={`h-2 w-2 rounded-full bg-white ${
-                                  eventLevel === key ? "block" : "hidden"
-                                }`}
+                                className={`h-2 w-2 rounded-full bg-white ${eventLevel === key ? "block" : "hidden"
+                                  }`}
                               ></span>
                             </span>
                           </span>
